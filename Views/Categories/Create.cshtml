@@ -1,0 +1,211 @@
+﻿@model NewsApp.Models.Category
+
+@{
+    ViewData["Title"] = "Create Category";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+
+<style>
+
+    body {
+        background: #f4f6fb;
+        font-family: "Segoe UI", sans-serif;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, #4e54c8, #8f94fb);
+        color: white;
+        padding: 22px 24px;
+        border-radius: 18px;
+        margin-bottom: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+    }
+
+    .form-card {
+        background: white;
+        padding: 30px;
+        border-radius: 18px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .form-control {
+        border-radius: 12px;
+        min-height: 50px;
+        border: 1px solid #dfe3e8;
+        padding: 12px 15px;
+    }
+
+        .form-control:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.2rem rgba(13,110,253,.15);
+        }
+
+    .btn-custom {
+        border-radius: 50px;
+        padding: 10px 22px;
+        font-weight: 600;
+    }
+
+    .hint-text {
+        font-size: 13px;
+        color: #888;
+        margin-top: 5px;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 20px;
+    }
+
+    @@media(max-width:768px) {
+
+        .form-card {
+            padding: 20px;
+        }
+
+        .page-header {
+            padding: 18px;
+        }
+    }
+
+</style>
+
+<div class="container py-4">
+
+    <!-- HEADER -->
+
+    <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+
+        <div>
+
+            <h3 class="mb-1">
+                <i class="bi bi-folder-plus"></i>
+                Create Category
+            </h3>
+
+            <small class="opacity-75">
+                Add bilingual category for your news portal
+            </small>
+
+        </div>
+
+        <a asp-action="Index"
+           class="btn btn-light btn-custom">
+
+            <i class="bi bi-arrow-left"></i>
+            Back
+
+        </a>
+
+    </div>
+
+    <!-- FORM -->
+
+    <div class="form-card">
+
+        <form asp-action="Create" method="post">
+
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly"
+                 class="alert alert-danger">
+            </div>
+
+            <div class="section-title">
+
+                Category Information
+
+            </div>
+
+            <!-- ENGLISH NAME -->
+
+            <div class="mb-4">
+
+                <label asp-for="NameEnglish"
+                       class="form-label">
+                </label>
+
+                <input asp-for="NameEnglish"
+                       class="form-control"
+                       placeholder="Enter category name in English..." />
+
+                <span asp-validation-for="NameEnglish"
+                      class="text-danger">
+                </span>
+
+                <div class="hint-text">
+
+                    Example: Sports, Politics, Technology
+
+                </div>
+
+            </div>
+
+            <!-- BANGLA NAME -->
+
+            <div class="mb-4">
+
+                <label asp-for="NameBangla"
+                       class="form-label">
+                </label>
+
+                <input asp-for="NameBangla"
+                       class="form-control"
+                       placeholder="বাংলা ক্যাটাগরি নাম লিখুন..." />
+
+                <span asp-validation-for="NameBangla"
+                      class="text-danger">
+                </span>
+
+                <div class="hint-text">
+
+                    উদাহরণ: খেলাধুলা, রাজনীতি, প্রযুক্তি
+
+                </div>
+
+            </div>
+
+            <!-- BUTTONS -->
+
+            <div class="d-flex gap-2 mt-4">
+
+                <button type="submit"
+                        class="btn btn-success btn-custom">
+
+                    <i class="bi bi-check-circle"></i>
+                    Create Category
+
+                </button>
+
+                <a asp-action="Index"
+                   class="btn btn-secondary btn-custom">
+
+                    Cancel
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

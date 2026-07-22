@@ -1,0 +1,1126 @@
+﻿
+@using Microsoft.AspNetCore.Identity
+@using NewsApp.Models
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        @ViewData["Title"] - News Express
+    </title>
+
+    <!-- Bootstrap -->
+    <link href="~/assets/vendor/bootstrap/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <!-- Bootstrap Icons -->
+    <link href="~/assets/vendor/bootstrap-icons/bootstrap-icons.css"
+          rel="stylesheet" />
+
+    <!-- Main CSS -->
+    <link href="~/assets/css/style.css"
+          rel="stylesheet"
+          asp-append-version="true" />
+
+    <style>
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: #f5f7fb;
+            font-family: "Segoe UI", sans-serif;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* =========================================
+           TOPBAR
+        ========================================= */
+
+        .topbar {
+            background: linear-gradient(90deg, #0f0f0f, #1b1b1b);
+            color: #fff;
+            padding: 10px 0;
+            font-size: 14px;
+            border-bottom: 1px solid #222;
+        }
+
+        .topbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .topbar-left,
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .topbar i {
+            color: #ffc107;
+        }
+
+        #englishDateTime {
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        #banglaDate {
+            color: #ffcc00;
+            font-weight: 600;
+        }
+
+        #weather {
+            color: #ddd;
+        }
+
+        /* =========================================
+           LANGUAGE BUTTONS
+        ========================================= */
+
+        .language-switcher {
+            display: flex;
+            gap: 8px;
+        }
+
+        .lang-btn {
+            background: rgba(255,255,255,0.08);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 6px 15px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+            .lang-btn:hover {
+                background: #e50914;
+                color: white;
+                transform: translateY(-2px);
+            }
+
+        /* =========================================
+           HEADER
+        ========================================= */
+
+        .main-header {
+            background: white;
+            border-bottom: 3px solid #e50914;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .logo img {
+            height: 68px;
+            transition: 0.3s;
+        }
+
+            .logo img:hover {
+                transform: scale(1.03);
+            }
+
+        /* =========================================
+           NAVBAR
+        ========================================= */
+
+        .navbar-nav .nav-link {
+            color: #333;
+            font-weight: 700;
+            padding: 10px 16px;
+            transition: 0.3s;
+            position: relative;
+        }
+
+            .navbar-nav .nav-link:hover {
+                color: #e50914;
+            }
+
+            .navbar-nav .nav-link::after {
+                content: "";
+                position: absolute;
+                left: 15px;
+                bottom: 4px;
+                width: 0%;
+                height: 2px;
+                background: #e50914;
+                transition: 0.3s;
+            }
+
+            .navbar-nav .nav-link:hover::after {
+                width: 60%;
+            }
+
+        /* =========================================
+           USER AREA
+        ========================================= */
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .user-name {
+            font-weight: 700;
+            color: #222;
+        }
+
+        /* =========================================
+           BUTTONS
+        ========================================= */
+
+        .btn-news {
+            background: #e50914;
+            color: white;
+            border: none;
+            transition: 0.3s;
+        }
+
+            .btn-news:hover {
+                background: #bb0810;
+                color: white;
+            }
+
+        /* =========================================
+           MAIN
+        ========================================= */
+
+        main {
+            min-height: 70vh;
+        }
+
+        /* =========================================
+           FOOTER
+        ========================================= */
+
+        .footer {
+            background: #111;
+            color: #ccc;
+            margin-top: 60px;
+            padding: 60px 0 20px;
+        }
+
+        .footer-title {
+            color: white;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+            .footer-links li {
+                margin-bottom: 10px;
+            }
+
+            .footer-links a {
+                color: #ccc;
+                transition: 0.3s;
+            }
+
+                .footer-links a:hover {
+                    color: #ff3b3b;
+                    padding-left: 4px;
+                }
+
+        .social-icons a {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            margin-right: 8px;
+            transition: 0.3s;
+        }
+
+            .social-icons a:hover {
+                background: #e50914;
+                transform: translateY(-3px);
+            }
+
+        .footer-bottom {
+            border-top: 1px solid #222;
+            margin-top: 35px;
+            padding-top: 15px;
+            font-size: 14px;
+        }
+
+        /* =========================================
+           MOBILE
+        ========================================= */
+
+        @@media(max-width: 991px) {
+
+            .main-header .container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .navbar-collapse {
+                text-align: center;
+            }
+
+            .header-user {
+                justify-content: center;
+            }
+        }
+
+        @@media(max-width: 768px) {
+
+            .topbar-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .topbar-left,
+            .topbar-right {
+                justify-content: center;
+            }
+
+            .logo img {
+                height: 55px;
+            }
+        }
+
+        /* =========================================
+           SCROLL TO TOP BUTTON
+        ========================================= */
+
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 52px;
+            height: 52px;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e50914, #ff4b2b);
+            color: white;
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.35s ease;
+            box-shadow: 0 10px 25px rgba(229, 9, 20, 0.30);
+        }
+
+            /* SHOW BUTTON */
+
+            .scroll-top-btn.show {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+
+            /* HOVER EFFECT */
+
+            .scroll-top-btn:hover {
+                transform: translateY(-5px) scale(1.08);
+                box-shadow: 0 16px 30px rgba(229, 9, 20, 0.45);
+            }
+
+            /* ICON */
+
+            .scroll-top-btn i {
+                font-weight: bold;
+            }
+
+        /* MOBILE */
+
+        @@media(max - width: 768px)
+
+        {
+            .scroll-top-btn
+
+        {
+            width: 46px;
+            height: 46px;
+            font-size: 18px;
+            bottom: 18px;
+            right: 18px;
+        }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- =========================================
+         TOPBAR
+    ========================================= -->
+
+    <div class="topbar">
+
+        <div class="container topbar-container">
+
+            <!-- LEFT -->
+            <div class="topbar-left">
+
+                <span>
+                    <i class="bi bi-clock"></i>
+                    <span id="englishDateTime"></span>
+                </span>
+
+                <span>|</span>
+
+                <span id="banglaDate"></span>
+
+            </div>
+
+            <!-- RIGHT -->
+            <div class="topbar-right">
+
+                <!-- WEATHER -->
+                <div>
+
+                    <i class="bi bi-cloud-sun"></i>
+
+                    <span id="weather">
+                        Dhaka 32°C
+                    </span>
+
+                </div>
+
+                <!-- LANGUAGE -->
+                <div class="language-switcher">
+
+                    <a asp-controller="Language"
+                       asp-action="SetLanguage"
+                       asp-route-culture="en"
+                       class="lang-btn">
+
+                        English
+
+                    </a>
+
+                    <a asp-controller="Language"
+                       asp-action="SetLanguage"
+                       asp-route-culture="bn"
+                       class="lang-btn">
+
+                        বাংলা
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- =========================================
+         HEADER
+    ========================================= -->
+
+    <header class="main-header shadow-sm">
+
+        <div class="container d-flex justify-content-between align-items-center py-2">
+
+            <!-- LOGO -->
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="logo">
+
+                <img src="@Url.Content("~/assets/img/News_Express.png")"
+                     alt="News Express Logo" />
+
+            </a>
+
+            <!-- NAVBAR -->
+            <nav class="navbar navbar-expand-lg">
+
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#navMenu">
+
+                    <span class="navbar-toggler-icon"></span>
+
+                </button>
+
+                <div class="collapse navbar-collapse"
+                     id="navMenu">
+
+                    <ul class="navbar-nav ms-auto">
+
+                        <li class="nav-item">
+
+                            <a asp-controller="Home"
+                               asp-action="Index"
+                               class="nav-link">
+
+                                @Localizer["Home"]
+
+                            </a>
+
+                        </li>
+
+                        @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+
+                                <a asp-controller="News"
+                                   asp-action="Index"
+                                   class="nav-link">
+
+                                    @Localizer["News"]
+
+                                </a>
+
+                            </li>
+
+                            <li class="nav-item">
+
+                                <a asp-controller="Categories"
+                                   asp-action="Index"
+                                   class="nav-link">
+
+                                    @Localizer["Categories"]
+
+                                </a>
+
+                            </li>
+                        }
+
+                        <li class="nav-item">
+
+                            <a asp-controller="Home"
+                               asp-action="About"
+                               class="nav-link">
+
+                                @Localizer["About"]
+
+                            </a>
+
+                        </li>
+
+                        <li class="nav-item">
+
+                            <a asp-controller="Home"
+                               asp-action="Contact"
+                               class="nav-link">
+
+                                @Localizer["Contact"]
+
+                            </a>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </nav>
+
+            <!-- USER -->
+            <div class="header-user">
+
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <span class="user-name">
+
+                        <i class="bi bi-person-circle"></i>
+
+                        @(User.Identity?.Name ?? "User")
+
+                    </span>
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a href="/News/Create"
+                           class="btn btn-sm btn-news">
+
+                            @Localizer["Admin Panel"]
+
+                        </a>
+                    }
+
+                    <a href="/Account/Logout"
+                       class="btn btn-sm btn-dark">
+
+                        @Localizer["Logout"]
+
+                    </a>
+                }
+                else
+                {
+                    <a href="/Account/Login"
+                       class="btn btn-sm btn-dark">
+
+                        @Localizer["Login"]
+
+                    </a>
+
+                    <a href="/Account/Register"
+                       class="btn btn-sm btn-outline-dark">
+
+                        @Localizer["Register"]
+
+                    </a>
+                }
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <!-- =========================================
+         MAIN BODY
+    ========================================= -->
+
+    <main class="container mt-4">
+
+        @RenderBody()
+
+    </main>
+
+    <!-- =========================================
+         FOOTER
+    ========================================= -->
+
+    <footer class="footer">
+
+        <div class="container">
+
+            <div class="row gy-4">
+
+                <!-- ABOUT -->
+                <div class="col-lg-3 col-md-6">
+
+                    <h5 class="footer-title">
+
+                        @Localizer["About Us"]
+
+                    </h5>
+
+                    <p>
+
+                        @Localizer["Footer Description"]
+
+                    </p>
+
+                </div>
+
+                <!-- CATEGORIES -->
+                <div class="col-lg-3 col-md-6">
+
+                    <h5 class="footer-title">
+
+                        @Localizer["Categories"]
+
+                    </h5>
+
+                    <ul class="footer-links">
+
+                        <li>
+                            <a href="#">
+                                @Localizer["Latest News"]
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#">
+                                @Localizer["Politics"]
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#">
+                                @Localizer["Business"]
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#">
+                                @Localizer["Technology"]
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#">
+                                @Localizer["Sports"]
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <!-- QUICK LINKS -->
+                <div class="col-lg-3 col-md-6">
+
+                    <h5 class="footer-title">
+
+                        @Localizer["Quick Links"]
+
+                    </h5>
+
+                    <ul class="footer-links">
+
+                        <li>
+                            <a asp-controller="Home"
+                               asp-action="About">
+
+                                @Localizer["About"]
+
+                            </a>
+                        </li>
+
+                        <li>
+                            <a asp-controller="Home"
+                               asp-action="Contact">
+
+                                @Localizer["Contact"]
+
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#">
+
+                                @Localizer["Privacy Policy"]
+
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#">
+
+                                @Localizer["Terms & Conditions"]
+
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <!-- NEWSLETTER -->
+                <div class="col-lg-3 col-md-6">
+
+                    <h5 class="footer-title">
+
+                        @Localizer["Newsletter"]
+
+                    </h5>
+
+                    <p>
+
+                        @Localizer["Subscribe Text"]
+
+                    </p>
+
+                    <form id="newsletterForm">
+
+                        <input type="email"
+                               class="form-control mb-2"
+                               placeholder="@Localizer["Enter Email"]"
+                               required />
+
+                        <button class="btn btn-news w-100">
+
+                            @Localizer["Subscribe"]
+
+                        </button>
+
+                    </form>
+
+                    <div class="social-icons mt-3">
+
+                        <a href="https://www.facebook.com/Ashikur.1428/">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+
+                        <a href="https://wa.link/c8uasz">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+
+                        <a href="https://www.linkedin.com/in/ashikur-rahman-134300159/">
+                            <i class="bi bi-linkedin"></i>
+                        </a>
+
+                        <a href="https://www.instagram.com/ashikur.1428/">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- BOTTOM -->
+            <div class="footer-bottom text-center">
+
+                <p>
+
+                    © 2026 News Express —
+                    @Localizer["All Rights Reserved"]
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+    <!-- Bootstrap -->
+    <script src="~/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Optional -->
+    @RenderSection("Scripts", required: false)
+
+   <!-- =========================================
+     DATE + TIME + WEATHER
+========================================= -->
+
+<script>
+
+    // =========================================
+    // UPDATE DATE & TIME
+    // =========================================
+
+    function updateDateTime() {
+
+        const now = new Date();
+
+        // =====================================
+        // ENGLISH DATE & TIME
+        // =====================================
+
+        const englishDate = now.toLocaleDateString('en-US', {
+            weekday: 'long',
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        });
+
+        const englishTime = now.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+
+        const englishElement =
+            document.getElementById("englishDateTime");
+
+        if (englishElement) {
+
+            englishElement.innerHTML =
+                `<i class="bi bi-calendar-event"></i>
+                 ${englishDate} | ${englishTime}`;
+        }
+
+        // =====================================
+        // BANGLA DATE
+        // =====================================
+
+        const banglaDays = [
+            "রবিবার",
+            "সোমবার",
+            "মঙ্গলবার",
+            "বুধবার",
+            "বৃহস্পতিবার",
+            "শুক্রবার",
+            "শনিবার"
+        ];
+
+        const banglaMonths = [
+            "বৈশাখ",
+            "জ্যৈষ্ঠ",
+            "আষাঢ়",
+            "শ্রাবণ",
+            "ভাদ্র",
+            "আশ্বিন",
+            "কার্তিক",
+            "অগ্রহায়ণ",
+            "পৌষ",
+            "মাঘ",
+            "ফাল্গুন",
+            "চৈত্র"
+        ];
+
+        // =====================================
+        // ENGLISH NUMBER → BANGLA NUMBER
+        // =====================================
+
+        function toBanglaNumber(number) {
+
+            const banglaDigits =
+                ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+
+            return number
+                .toString()
+                .replace(/\d/g, d => banglaDigits[d]);
+        }
+
+        // =====================================
+        // BANGLA CALENDAR
+        // =====================================
+
+        const gYear = now.getFullYear();
+
+        let banglaMonthIndex = 0;
+        let banglaDay = 1;
+        let banglaYear = gYear - 593;
+
+        const monthMap = [
+            { month: 3, day: 14 }, // বৈশাখ
+            { month: 4, day: 15 }, // জ্যৈষ্ঠ
+            { month: 5, day: 15 }, // আষাঢ়
+            { month: 6, day: 16 }, // শ্রাবণ
+            { month: 7, day: 17 }, // ভাদ্র
+            { month: 8, day: 17 }, // আশ্বিন
+            { month: 9, day: 18 }, // কার্তিক
+            { month: 10, day: 17 }, // অগ্রহায়ণ
+            { month: 11, day: 16 }, // পৌষ
+            { month: 0, day: 15 }, // মাঘ
+            { month: 1, day: 13 }, // ফাল্গুন
+            { month: 2, day: 15 }  // চৈত্র
+        ];
+
+        for (let i = 0; i < monthMap.length; i++) {
+
+            const current = monthMap[i];
+            const next = monthMap[(i + 1) % 12];
+
+            const currentDate =
+                new Date(gYear, current.month, current.day);
+
+            const nextDate =
+                i === 11
+                    ? new Date(gYear + 1, next.month, next.day)
+                    : new Date(gYear, next.month, next.day);
+
+            if (now >= currentDate && now < nextDate) {
+
+                banglaMonthIndex = i;
+
+                const diffTime =
+                    now - currentDate;
+
+                banglaDay =
+                    Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+                break;
+            }
+        }
+
+        const banglaText =
+            `${banglaDays[now.getDay()]},
+             ${toBanglaNumber(banglaDay)}
+             ${banglaMonths[banglaMonthIndex]}
+             ${toBanglaNumber(banglaYear)}`;
+
+        const banglaElement =
+            document.getElementById("banglaDate");
+
+        if (banglaElement) {
+
+            banglaElement.innerHTML =
+                `<i class="bi bi-calendar2-week"></i>
+                 ${banglaText}`;
+        }
+    }
+
+    // =========================================
+    // START DATE TIME
+    // =========================================
+
+    updateDateTime();
+
+    setInterval(updateDateTime, 1000);
+
+</script>
+
+<!-- =========================================
+     WEATHER API
+========================================= -->
+
+<script>
+
+    // =========================================
+    // GET WEATHER
+    // =========================================
+
+    async function getWeather() {
+
+        try {
+
+            const apiKey =
+                "47f7b7ff236644707d84ef1069df1d08";
+
+            const city = "Dhaka";
+
+            const response = await fetch(
+                `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`
+            );
+
+            if (!response.ok) {
+
+                throw new Error("Weather API Error");
+            }
+
+            const data = await response.json();
+
+            const temp =
+                Math.round(data.main.temp);
+
+            const condition =
+                data.weather[0].main;
+
+            const icon =
+                data.weather[0].icon;
+
+            const weatherElement =
+                document.getElementById("weather");
+
+            if (weatherElement) {
+
+                weatherElement.innerHTML = `
+                    
+
+                    <span>
+                        ${city} ${temp}°C
+                    </span>
+
+                    <small class="ms-1">
+                        ${condition}
+                    </small>
+                `;
+            }
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+            const weatherElement =
+                document.getElementById("weather");
+
+            if (weatherElement) {
+
+                weatherElement.innerHTML =
+                    `<i class="bi bi-cloud-sun"></i>
+                     Dhaka 32°C`;
+            }
+        }
+    }
+
+    // =========================================
+    // LOAD WEATHER
+    // =========================================
+
+    getWeather();
+
+    // AUTO REFRESH EVERY 10 MINUTES
+    setInterval(getWeather, 600000);
+
+</script>
+
+    <!-- =========================================
+         NEWSLETTER
+    ========================================= -->
+
+    <script>
+
+        document.getElementById("newsletterForm")
+            .addEventListener("submit", function (e) {
+
+                e.preventDefault();
+
+                alert("Subscribed Successfully!");
+
+                this.reset();
+            });
+
+    </script>
+
+    <!-- =========================================
+         SCROLL TO TOP BUTTON
+    ========================================= -->
+
+    <button id="scrollTopBtn"
+            class="scroll-top-btn">
+
+        <i class="bi bi-arrow-up"></i>
+
+    </button>
+
+    <script>
+
+        // =========================================
+        // SCROLL TO TOP BUTTON
+        // =========================================
+
+        const scrollTopBtn =
+            document.getElementById("scrollTopBtn");
+
+        // SHOW BUTTON AFTER SCROLL
+
+        window.addEventListener("scroll", function () {
+
+            if (window.scrollY > 300) {
+
+                scrollTopBtn.classList.add("show");
+            }
+            else {
+
+                scrollTopBtn.classList.remove("show");
+            }
+        });
+
+        // SCROLL TO TOP
+
+        scrollTopBtn.addEventListener("click", function () {
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        });
+
+    </script>
+
+</body>
+
+</html>

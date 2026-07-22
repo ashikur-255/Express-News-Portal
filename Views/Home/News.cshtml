@@ -1,0 +1,428 @@
+﻿@model List<NewsApp.Models.News>
+
+@using System.Globalization
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["Category News"].Value;
+
+    var culture = CultureInfo.CurrentUICulture.Name;
+    bool isBangla = culture.StartsWith("bn");
+
+    string categoryName = ViewData["cat"]?.ToString() ?? Localizer["News"].Value;
+
+    string GetTitle(NewsApp.Models.News item)
+    {
+        return isBangla
+            ? (!string.IsNullOrWhiteSpace(item.TitleBangla)
+                ? item.TitleBangla
+                : item.TitleEnglish)
+            : (!string.IsNullOrWhiteSpace(item.TitleEnglish)
+                ? item.TitleEnglish
+                : item.TitleBangla);
+    }
+
+    string GetDescription(NewsApp.Models.News item)
+    {
+        return isBangla
+            ? (!string.IsNullOrWhiteSpace(item.DescriptionBangla)
+                ? item.DescriptionBangla
+                : item.DescriptionEnglish)
+            : (!string.IsNullOrWhiteSpace(item.DescriptionEnglish)
+                ? item.DescriptionEnglish
+                : item.DescriptionBangla);
+    }
+
+    string GetCategoryName(NewsApp.Models.Category category)
+    {
+        if (category == null)
+            return Localizer["Uncategorized"].Value;
+
+        return isBangla
+            ? (!string.IsNullOrWhiteSpace(category.NameBangla)
+                ? category.NameBangla
+                : category.NameEnglish)
+            : (!string.IsNullOrWhiteSpace(category.NameEnglish)
+                ? category.NameEnglish
+                : category.NameBangla);
+    }
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+
+<style>
+
+    body {
+        background: #f5f7fb;
+        font-family: "Segoe UI", sans-serif;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    .page-header {
+        text-align: center;
+        margin: 35px 0;
+    }
+
+        .page-header h2 {
+            font-weight: 800;
+            font-size: 34px;
+            color: #111;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 15px;
+        }
+
+    .news-card {
+        border: none;
+        border-radius: 18px;
+        overflow: hidden;
+        background: #fff;
+        transition: 0.35s ease;
+        box-shadow: 0 5px 18px rgba(0,0,0,0.07);
+        height: 100%;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .news-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 16px 35px rgba(0,0,0,0.14);
+        }
+
+    .media-wrapper {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .news-img {
+        height: 240px;
+        width: 100%;
+        object-fit: cover;
+        background: #000;
+        border: none;
+    }
+
+    .news-body {
+        padding: 18px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .news-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 10px;
+        line-height: 1.5;
+    }
+
+    .news-date {
+        font-size: 13px;
+        color: #888;
+        margin-bottom: 12px;
+    }
+
+    .news-text {
+        font-size: 14px;
+        color: #555;
+        margin-top: 8px;
+        line-height: 1.7;
+        flex-grow: 1;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .badge-custom {
+        font-size: 11px;
+        margin-right: 5px;
+        padding: 7px 10px;
+        border-radius: 50px;
+    }
+
+    .empty-box {
+        text-align: center;
+        padding: 80px 20px;
+        color: #777;
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 5px 18px rgba(0,0,0,0.05);
+    }
+
+        .empty-box i {
+            font-size: 60px;
+            margin-bottom: 15px;
+            color: #d0d0d0;
+        }
+
+    .video-thumb-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0,0,0,0.15);
+    }
+
+    .play-btn {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.90);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 28px;
+        color: red;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.20);
+    }
+
+    @@media(max-width:768px) {
+
+        .page-header h2 {
+            font-size: 26px;
+        }
+
+        .news-img {
+            height: 220px;
+        }
+    }
+
+</style>
+
+<div class="container py-4">
+
+    <!-- =========================
+         PAGE HEADER
+    ========================== -->
+
+    <div class="page-header">
+
+        <h2>
+            📰 @categoryName
+        </h2>
+
+        <p>
+            @Localizer["Latest updates and stories from this category"].Value
+        </p>
+
+    </div>
+
+    <!-- =========================
+         EMPTY STATE
+    ========================== -->
+    @if (Model == null || !Model.Any())
+    {
+        <div class="empty-box">
+
+            <i class="bi bi-newspaper"></i>
+
+            <h4 class="fw-bold">
+                @Localizer["No news found"].Value
+            </h4>
+
+            <p class="mb-0">
+                @Localizer["There are no news articles available right now"].Value
+            </p>
+
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+
+            @foreach (var item in Model.OrderByDescending(x => x.Date))
+            {
+                <div class="col-md-6 col-lg-4">
+
+                    <a asp-controller="News"
+                       asp-action="Details"
+                       asp-route-id="@item.Id"
+                       class="d-block h-100">
+
+                        <div class="news-card">
+
+                            <!-- =========================
+                                 MEDIA
+                            ========================== -->
+
+                            <div class="media-wrapper">
+
+                                @if (!string.IsNullOrWhiteSpace(item.VideoPath))
+                                {
+                                    <video class="news-img" controls>
+
+                                        <source src="@Url.Content("~/assets/video/" + item.VideoPath)"
+                                                type="video/mp4" />
+
+                                    </video>
+                                }
+                                else if (!string.IsNullOrWhiteSpace(item.VideoUrl))
+                                {
+                                    var videoId = GetYouTubeId(item.VideoUrl);
+
+                                    if (!string.IsNullOrWhiteSpace(videoId))
+                                    {
+                                        <div class="position-relative">
+
+                                            <img class="news-img"
+                                                 src="https://img.youtube.com/vi/@(videoId)/hqdefault.jpg"
+                                                 alt="YouTube Video" />
+
+                                            <div class="video-thumb-overlay">
+
+                                                <div class="play-btn">
+                                                    <i class="bi bi-play-fill"></i>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="news-img d-flex align-items-center justify-content-center text-white bg-dark">
+
+                                            @Localizer["Video Unavailable"].Value
+
+                                        </div>
+                                    }
+                                }
+                                else if (!string.IsNullOrWhiteSpace(item.Image))
+                                {
+                                    <img class="news-img"
+                                         src="@Url.Content("~/assets/img/" + item.Image)"
+                                         alt="@GetTitle(item)" />
+                                }
+                                else
+                                {
+                                    <div class="news-img d-flex align-items-center justify-content-center text-white bg-dark">
+
+                                        @Localizer["No Media Available"].Value
+
+                                    </div>
+                                }
+
+                            </div>
+
+                            <!-- =========================
+                                 BODY
+                            ========================== -->
+
+                            <div class="news-body">
+
+                                <div class="mb-3">
+
+                                    @if (item.IsBreaking)
+                                    {
+                                        <span class="badge bg-danger badge-custom">
+
+                                            🔥 @Localizer["Breaking"].Value
+
+                                        </span>
+                                    }
+
+                                    @if (item.IsFeatured)
+                                    {
+                                        <span class="badge bg-warning text-dark badge-custom">
+
+                                            ⭐ @Localizer["Featured"].Value
+
+                                        </span>
+                                    }
+
+                                <span class="badge bg-secondary badge-custom">
+
+                                    @GetCategoryName(item.Category)
+
+                                </span>
+
+                            </div>
+
+                            <div class="news-title">
+
+                                @GetTitle(item)
+
+                            </div>
+
+                            <div class="news-date">
+
+                                <i class="bi bi-calendar-event"></i>
+
+                                @item.Date.ToString("dd MMM yyyy")
+
+                            </div>
+
+                            <div class="news-text">
+
+                                @(string.IsNullOrWhiteSpace(GetDescription(item))
+                                                            ? Localizer["No description available"].Value
+                                                            : GetDescription(item))
+
+                        </div>
+
+                            </div>
+
+                        </div>
+
+                    </a>
+
+                </div>
+                }
+
+        </div>
+    }
+
+</div>
+
+@functions {
+
+    public string GetYouTubeId(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            return "";
+
+        try
+        {
+            Uri uri = new Uri(url);
+
+            // youtu.be/xxxx
+            if (uri.Host.Contains("youtu.be"))
+                return uri.AbsolutePath.Trim('/');
+
+            // youtube.com/watch?v=xxxx
+            if (uri.Query.Contains("v="))
+            {
+                var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+
+                if (query.ContainsKey("v"))
+                    return query["v"].ToString();
+            }
+
+            // youtube.com/embed/xxxx
+            if (url.Contains("embed/"))
+                return url.Split("embed/").Last().Split('?')[0];
+
+            // youtube shorts
+            if (url.Contains("shorts/"))
+                return url.Split("shorts/").Last().Split('?')[0];
+
+            return "";
+        }
+        catch
+        {
+            return "";
+        }
+    }
+}

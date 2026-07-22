@@ -1,0 +1,469 @@
+﻿
+@model NewsApp.Models.News
+
+@{
+    ViewData["Title"] = "Create News";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+
+<style>
+
+    body {
+        background: #f4f6fb;
+    }
+
+    .create-wrapper {
+        max-width: 1400px;
+        margin: auto;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, #ff416c, #ff4b2b);
+        color: white;
+        padding: 25px;
+        border-radius: 18px;
+        margin-bottom: 25px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 35px rgba(0,0,0,0.08);
+    }
+
+    .section-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #222;
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 12px;
+        padding: 12px;
+        border: 1px solid #ddd;
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            box-shadow: 0 0 0 0.2rem rgba(229,9,20,.15);
+            border-color: #e50914;
+        }
+
+    textarea {
+        min-height: 140px;
+        resize: vertical;
+    }
+
+    .preview-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        border-radius: 16px;
+        margin-top: 15px;
+        display: none;
+        border: 2px dashed #ddd;
+    }
+
+    .video-preview {
+        width: 100%;
+        border-radius: 16px;
+        margin-top: 15px;
+        display: none;
+    }
+
+    .side-card {
+        background: #fafafa;
+        border-radius: 18px;
+        padding: 20px;
+        border: 1px solid #eee;
+    }
+
+    .switch-box {
+        background: #fff;
+        padding: 15px;
+        border-radius: 12px;
+        border: 1px solid #eee;
+        margin-bottom: 15px;
+    }
+
+    .btn-publish {
+        background: linear-gradient(135deg, #11998e, #38ef7d);
+        border: none;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: 700;
+    }
+
+        .btn-publish:hover {
+            opacity: .9;
+            color: white;
+        }
+
+    .btn-cancel {
+        border-radius: 50px;
+        padding: 12px 25px;
+    }
+
+</style>
+
+<div class="container py-4 create-wrapper">
+
+    <!-- HEADER -->
+
+    <div class="page-header d-flex justify-content-between align-items-center">
+
+        <div>
+            <h2 class="fw-bold mb-2">
+                <i class="bi bi-newspaper"></i>
+                Create News
+            </h2>
+
+            <p class="mb-0">
+                Publish bilingual news content professionally
+            </p>
+        </div>
+
+        <a asp-action="Index" class="btn btn-light rounded-pill px-4">
+            <i class="bi bi-arrow-left"></i>
+            Back
+        </a>
+
+    </div>
+
+    <!-- FORM -->
+
+    <form asp-action="Create"
+          enctype="multipart/form-data">
+
+        <div asp-validation-summary="ModelOnly"
+             class="alert alert-danger">
+        </div>
+
+        <div class="row g-4">
+
+            <!-- LEFT -->
+
+            <div class="col-lg-8">
+
+                <div class="form-card">
+
+                    <!-- ENGLISH -->
+
+                    <div class="section-title">
+                        English Content
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="TitleEnglish"
+                               class="form-label">
+                            English Title
+                        </label>
+
+                        <input asp-for="TitleEnglish"
+                               class="form-control"
+                               placeholder="Enter English title..." />
+
+                        <span asp-validation-for="TitleEnglish"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                    <div class="mb-5">
+                        <label asp-for="DescriptionEnglish"
+                               class="form-label">
+                            English Description
+                        </label>
+
+                        <textarea asp-for="DescriptionEnglish"
+                                  class="form-control"
+                                  placeholder="Write full English news..."></textarea>
+
+                        <span asp-validation-for="DescriptionEnglish"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                    <!-- BANGLA -->
+
+                    <div class="section-title">
+                         বাংলা কনটেন্ট
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="TitleBangla"
+                               class="form-label">
+                            বাংলা শিরোনাম
+                        </label>
+
+                        <input asp-for="TitleBangla"
+                               class="form-control"
+                               placeholder="বাংলা শিরোনাম লিখুন..." />
+
+                        <span asp-validation-for="TitleBangla"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="DescriptionBangla"
+                               class="form-label">
+                            বাংলা বিস্তারিত
+                        </label>
+
+                        <textarea asp-for="DescriptionBangla"
+                                  class="form-control"
+                                  placeholder="বাংলা নিউজ লিখুন..."></textarea>
+
+                        <span asp-validation-for="DescriptionBangla"
+                              class="text-danger">
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT -->
+
+            <div class="col-lg-4">
+
+                <div class="side-card">
+
+                    <!-- DATE -->
+
+                    <div class="mb-4">
+
+                        <label asp-for="Date"
+                               class="form-label">
+                            Publish Date & Time
+                        </label>
+
+                        <input asp-for="Date"
+                               type="datetime-local"
+                               class="form-control"
+                               value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+
+                    </div>
+
+                    <!-- CATEGORY -->
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Category
+                        </label>
+
+                        <select asp-for="CategoryId"
+                                class="form-select"
+                                asp-items="ViewBag.CategoryId">
+
+                            <option value="">
+                                -- Select Category --
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- IMAGE -->
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Upload Image
+                        </label>
+
+                        <input type="file"
+                               name="ImageFile"
+                               class="form-control"
+                               id="imageInput"
+                               accept="image/*" />
+
+                        <img id="previewImage"
+                             class="preview-image" />
+
+                    </div>
+
+                    <!-- VIDEO -->
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Upload Video
+                        </label>
+
+                        <input asp-for="VideoFile"
+                               type="file"
+                               class="form-control"
+                               id="videoInput"
+                               accept="video/*" />
+
+                        <video id="videoPreview"
+                               class="video-preview"
+                               controls>
+                        </video>
+
+                    </div>
+
+                    <!-- YOUTUBE -->
+
+                    <div class="mb-4">
+
+                        <label asp-for="VideoUrl"
+                               class="form-label">
+                            YouTube URL
+                        </label>
+
+                        <input asp-for="VideoUrl"
+                               class="form-control"
+                               id="youtubeInput"
+                               placeholder="https://youtube.com/watch?v=..." />
+
+                    </div>
+
+                    <!-- BREAKING -->
+
+                    <div class="switch-box form-check form-switch">
+
+                        <input asp-for="IsBreaking"
+                               class="form-check-input"
+                               type="checkbox" />
+
+                        <label class="form-check-label">
+                            🔥 Breaking News
+                        </label>
+
+                    </div>
+
+                    <!-- FEATURED -->
+
+                    <div class="switch-box form-check form-switch">
+
+                        <input asp-for="IsFeatured"
+                               class="form-check-input"
+                               type="checkbox" />
+
+                        <label class="form-check-label">
+                            ⭐ Featured News
+                        </label>
+
+                    </div>
+
+                    <!-- BUTTONS -->
+
+                    <div class="d-grid gap-2 mt-4">
+
+                        <button type="submit"
+                                class="btn btn-publish">
+
+                            <i class="bi bi-check-circle"></i>
+                            Publish News
+
+                        </button>
+
+                        <a asp-action="Index"
+                           class="btn btn-outline-secondary btn-cancel">
+
+                            Cancel
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+
+        // IMAGE PREVIEW
+
+        const imageInput =
+            document.getElementById("imageInput");
+
+        const previewImage =
+            document.getElementById("previewImage");
+
+        imageInput?.addEventListener("change", function () {
+
+            const file = this.files[0];
+
+            if (!file) return;
+
+            const reader = new FileReader();
+
+            reader.onload = e => {
+
+                previewImage.src = e.target.result;
+
+                previewImage.style.display = "block";
+            };
+
+            reader.readAsDataURL(file);
+
+        });
+
+        // VIDEO PREVIEW
+
+        const videoInput =
+            document.getElementById("videoInput");
+
+        const videoPreview =
+            document.getElementById("videoPreview");
+
+        const youtubeInput =
+            document.getElementById("youtubeInput");
+
+        videoInput?.addEventListener("change", function () {
+
+            const file = this.files[0];
+
+            if (!file) return;
+
+            videoPreview.src =
+                URL.createObjectURL(file);
+
+            videoPreview.style.display = "block";
+
+            youtubeInput.value = "";
+
+        });
+
+        youtubeInput?.addEventListener("input", function () {
+
+            if (this.value) {
+
+                videoInput.value = "";
+
+                videoPreview.style.display = "none";
+            }
+
+        });
+
+    </script>
+}
+

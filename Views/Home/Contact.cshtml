@@ -1,0 +1,218 @@
+﻿@model ContentUs
+
+<style>
+    /* ===== CONTACT SECTION ===== */
+    .contact {
+        background: #f9fbfd;
+        padding: 60px 0;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* TITLE */
+    .section-title {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+        .section-title h2 {
+            font-weight: 700;
+            font-size: 32px;
+            color: #111;
+        }
+
+        .section-title p {
+            color: #666;
+            font-size: 14px;
+        }
+
+    /* MAP */
+    .map iframe {
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    /* INFO BOX */
+    .info-box {
+        background: #fff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        text-align: center;
+        transition: 0.3s;
+    }
+
+        .info-box:hover {
+            transform: translateY(-6px);
+        }
+
+        .info-box i {
+            font-size: 28px;
+            color: #e50914;
+            margin-bottom: 10px;
+        }
+
+        .info-box h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .info-box p {
+            font-size: 14px;
+            color: #555;
+        }
+
+    /* FORM */
+    .contact-form {
+        background: #fff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+        .contact-form .form-control {
+            border-radius: 8px;
+            height: 45px;
+        }
+
+        .contact-form textarea {
+            height: auto !important;
+        }
+
+    /* BUTTON */
+    .btn-send {
+        background: linear-gradient(90deg, #e50914, #b00610);
+        border: none;
+        padding: 10px 25px;
+        border-radius: 8px;
+        font-weight: 600;
+        color: #fff;
+        transition: 0.3s;
+    }
+
+        .btn-send:hover {
+            background: #111;
+        }
+</style>
+
+
+<!-- ======= Contact Section ======= -->
+<section id="contact" class="contact">
+
+    <div class="container">
+
+        <!-- TITLE -->
+        <div class="section-title">
+            <h2>Contact Us</h2>
+            <p>Get in touch with Express News. আমরা আপনার সাথে যুক্ত থাকতে চাই।</p>
+        </div>
+
+    </div>
+
+    <!-- MAP -->
+    <div class="map">
+        <iframe style="border:0; width: 100%; height: 350px;"
+                loading="lazy"
+                allowfullscreen
+                src="https://www.google.com/maps?q=Mirpur%2011%20Dhaka&output=embed">
+        </iframe>
+    </div>
+
+    <div class="container">
+
+        <div class="row mt-5">
+
+            <!-- LEFT SIDE -->
+            <div class="col-lg-6">
+
+                <div class="row">
+
+                    <!-- ADDRESS -->
+                    <div class="col-md-12">
+                        <div class="info-box">
+                            <i class="bx bx-map"></i>
+                            <h3>Our Office</h3>
+                            <p>
+                                Nannu Market, Mirpur-11 <br>
+                                Dhaka-1216, Bangladesh
+                            </p>
+
+                            <!-- BUTTON -->
+                            <a href="https://www.google.com/maps?q=Mirpur%2011%20Dhaka"
+                               target="_blank"
+                               class="btn btn-outline-danger mt-2">
+                                Get Directions
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- EMAIL -->
+                    <div class="col-md-6">
+                        <div class="info-box mt-4">
+                            <i class="bx bx-envelope"></i>
+                            <h3>Email Us</h3>
+                            <p>
+                                info@newsexpress.com <br>
+                                ashikurr255@gmail.com
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- PHONE -->
+                    <div class="col-md-6">
+                        <div class="info-box mt-4">
+                            <i class="bx bx-phone-call"></i>
+                            <h3>Call Us</h3>
+                            <p>
+                                +880 1708-588330 <br>
+                                +880 1571-148687
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RIGHT SIDE (FORM) -->
+            <div class="col-lg-6">
+
+                <form asp-action="SaveContact" method="post" class="contact-form">
+
+                    <div class="row">
+                        <div class="col form-group">
+                            <input type="text" asp-for="Name" class="form-control" placeholder="Your Name" required>
+                        </div>
+
+                        <div class="col form-group mt-3 mt-md-0">
+                            <input type="email" asp-for="Email" class="form-control" placeholder="Your Email" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <input type="text" asp-for="Subject" class="form-control" placeholder="Subject" required>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <textarea asp-for="Message" class="form-control" rows="5" placeholder="Message" required></textarea>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn-send">Send Message</button>
+                    </div>
+
+                    <!-- VALIDATION -->
+                    <div class="text-danger text-center mt-2">
+                        @Html.ValidationSummary(false)
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+<!-- End Contact Section -->

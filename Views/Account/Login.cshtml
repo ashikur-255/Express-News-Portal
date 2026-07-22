@@ -1,0 +1,128 @@
+﻿@model NewsApp.ViewModels.LoginVM
+
+<style>
+    body {
+        background: linear-gradient(135deg, #0f0f0f, #1c1c1c);
+    }
+
+    .auth-wrapper {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .auth-box {
+        width: 100%;
+        max-width: 420px;
+        background: #ffffff;
+        padding: 35px;
+        border-radius: 16px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+        animation: fadeIn 0.4s ease-in-out;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .auth-title {
+        font-weight: 700;
+        font-size: 26px;
+        text-align: center;
+        margin-bottom: 5px;
+    }
+
+    .auth-subtitle {
+        text-align: center;
+        font-size: 13px;
+        color: #777;
+        margin-bottom: 20px;
+    }
+
+    .form-control {
+        height: 45px;
+        border-radius: 10px;
+    }
+
+    .btn-login {
+        height: 45px;
+        border-radius: 10px;
+        background: linear-gradient(90deg, #111, #333);
+        border: none;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    .btn-login:hover {
+        background: linear-gradient(90deg, #e50914, #b00610);
+    }
+
+    .form-check-label {
+        font-size: 13px;
+        color: #555;
+    }
+
+    .auth-link {
+        font-size: 13px;
+        color: #e50914;
+        text-decoration: none;
+    }
+
+    .auth-link:hover {
+        text-decoration: underline;
+    }
+
+    .error-box {
+        font-size: 13px;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="auth-wrapper">
+
+    <div class="auth-box">
+
+        <!-- HEADER -->
+        <div class="auth-title">Welcome Back</div>
+        <div class="auth-subtitle">Login to access News Dashboard</div>
+
+        <!-- FORM -->
+        <form method="post">
+
+            <div class="mb-3">
+                <input asp-for="Email" class="form-control" placeholder="Email address" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <input asp-for="Password" type="password" class="form-control" placeholder="Password" />
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <div class="form-check mb-3">
+                <input asp-for="RememberMe" class="form-check-input" />
+                <label class="form-check-label">Remember me</label>
+            </div>
+
+            <button type="submit" class="btn btn-login w-100 text-white">
+                Login
+            </button>
+
+            <!-- VALIDATION -->
+            <div class="text-danger text-center error-box">
+                @Html.ValidationSummary(false)
+            </div>
+
+        </form>
+
+        <!-- FOOTER -->
+        <div class="text-center mt-3">
+            <span class="text-muted">Don't have an account?</span>
+            <a href="/Account/Register" class="auth-link">Register</a>
+        </div>
+
+    </div>
+
+</div>

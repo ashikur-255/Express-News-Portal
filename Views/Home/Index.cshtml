@@ -1,0 +1,736 @@
+﻿@model NewsApp.ViewModels.HomeViewModel
+@using NewsApp.Models
+@using System.Globalization
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["Home"].Value;
+
+    var newsList = Model?.News ?? new List<News>();
+
+    var categories = Model?.Categories ?? new List<Category>();
+
+    var orderedNews = newsList
+        .Where(x => x != null)
+        .OrderByDescending(x => x.Date)
+        .ThenByDescending(x => x.Id)
+        .ToList();
+
+    var breakingNews = orderedNews
+        .Where(x => x.IsBreaking)
+        .ToList();
+
+    var hero =
+        breakingNews.FirstOrDefault()
+        ?? orderedNews.FirstOrDefault();
+
+    var normalNews = orderedNews
+        .Where(x => hero == null || x.Id != hero.Id)
+        .ToList();
+
+    var culture = CultureInfo.CurrentUICulture.Name;
+    bool isBangla = culture.StartsWith("bn");
+
+    string GetTitle(News item)
+    {
+        return isBangla
+            ? (!string.IsNullOrWhiteSpace(item.TitleBangla)
+                ? item.TitleBangla
+                : item.TitleEnglish)
+            : (!string.IsNullOrWhiteSpace(item.TitleEnglish)
+                ? item.TitleEnglish
+                : item.TitleBangla);
+    }
+
+    string GetDescription(News item)
+    {
+        return isBangla
+            ? (!string.IsNullOrWhiteSpace(item.DescriptionBangla)
+                ? item.DescriptionBangla
+                : item.DescriptionEnglish)
+            : (!string.IsNullOrWhiteSpace(item.DescriptionEnglish)
+                ? item.DescriptionEnglish
+                : item.DescriptionBangla);
+    }
+
+    string GetCategoryName(Category category)
+    {
+        if (category == null)
+            return Localizer["Uncategorized"].Value;
+
+        return isBangla
+            ? (!string.IsNullOrWhiteSpace(category.NameBangla)
+                ? category.NameBangla
+                : category.NameEnglish)
+            : (!string.IsNullOrWhiteSpace(category.NameEnglish)
+                ? category.NameEnglish
+                : category.NameBangla);
+    }
+
+    string GetYoutubeId(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            return "";
+
+        try
+        {
+            if (url.Contains("v="))
+            {
+                return url
+                    .Split("v=")[1]
+                    .Split('&')[0];
+            }
+
+            if (url.Contains("youtu.be/"))
+            {
+                return url
+                    .Split("youtu.be/")[1]
+                    .Split('?')[0];
+            }
+
+            if (url.Contains("embed/"))
+            {
+                return url
+                    .Split("embed/")[1]
+                    .Split('?')[0];
+            }
+        }
+        catch
+        {
+            return "";
+        }
+
+        return "";
+    }
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+
+<style>
+
+    body {
+        background: #f4f6fb;
+        font-family: "Segoe UI", sans-serif;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    /* ======================================================
+           TOP BAR
+        ====================================================== */
+
+    .top-header {
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 16px 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+    }
+
+    .lang-btn {
+        border-radius: 50px;
+        padding: 8px 18px;
+        font-weight: 600;
+    }
+
+    /* ======================================================
+       BREAKING NEWS
+    ====================================================== */
+
+    .breaking-wrapper {
+        margin-bottom: 25px;
+    }
+
+    .breaking-bar {
+        background: linear-gradient(90deg, #a00000, #ff2d2d);
+        color: white;
+        padding: 12px 18px;
+        border-radius: 14px;
+        overflow: hidden;
+        white-space: nowrap;
+        position: relative;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    /* SCROLLING TEXT */
+
+    .breaking-text {
+        display: inline-block;
+        min-width: 100%;
+        padding-left: 100%;
+        animation: breakingScroll 45s linear infinite;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    /* STOP ANIMATION ON HOVER */
+
+    .breaking-bar:hover .breaking-text {
+        animation-play-state: paused;
+    }
+
+    /* OPTIONAL: HIGHLIGHT TEXT ON HOVER */
+
+    .breaking-text span:hover {
+        color: #ffe082;
+        transition: 0.3s;
+    }
+
+    /* SMOOTH SCROLL */
+
+    @@keyframes breakingScroll {
+        0%
+
+    {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+
+    }
+
+    .pagination .page-link {
+        color: #e50914;
+        border-radius: 8px;
+        margin: 0 3px;
+        border: 1px solid #ddd;
+        transition: all .3s ease;
+    }
+
+        .pagination .page-link:hover {
+            background: #e50914;
+            color: #fff;
+            border-color: #e50914;
+        }
+
+    .pagination .active .page-link {
+        background: #e50914;
+        border-color: #e50914;
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .pagination .disabled .page-link {
+        opacity: .5;
+    }
+
+    /* ======================================================
+           CATEGORY
+        ====================================================== */
+
+    .category-strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 28px;
+    }
+
+    .cat-pill {
+        padding: 8px 18px;
+        border-radius: 50px;
+        background: white;
+        border: 1px solid #ddd;
+        color: #333;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.3s ease;
+    }
+
+        .cat-pill:hover {
+            background: #e50914;
+            color: white;
+            border-color: #e50914;
+            transform: translateY(-2px);
+        }
+
+    /* ======================================================
+           HERO
+        ====================================================== */
+
+    .hero-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 24px;
+        margin-bottom: 40px;
+        background: #000;
+        min-height: 450px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.10);
+    }
+
+    .hero-media {
+        width: 100%;
+        height: 450px;
+        object-fit: cover;
+        border: none;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.20), transparent);
+        display: flex;
+        align-items: flex-end;
+        padding: 35px;
+    }
+
+    .hero-content {
+        color: white;
+        max-width: 850px;
+    }
+
+    .hero-title {
+        font-size: 38px;
+        font-weight: 800;
+        line-height: 1.35;
+        margin-top: 12px;
+        margin-bottom: 15px;
+    }
+
+    .hero-meta {
+        font-size: 14px;
+        opacity: 0.9;
+    }
+
+    /* ======================================================
+           NEWS CARD
+        ====================================================== */
+
+    .news-card {
+        border: none;
+        border-radius: 18px;
+        overflow: hidden;
+        transition: 0.35s ease;
+        background: white;
+        height: 100%;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+        .news-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 35px rgba(0,0,0,0.14);
+        }
+
+    .media-box {
+        width: 100%;
+        height: 230px;
+        background: #111;
+        overflow: hidden;
+    }
+
+        .media-box img,
+        .media-box video,
+        .media-box iframe {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border: none;
+        }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .news-title {
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.5;
+        color: #111;
+        margin-bottom: 10px;
+    }
+
+    .news-desc {
+        color: #666;
+        font-size: 14px;
+        line-height: 1.7;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .empty-media {
+        width: 100%;
+        height: 100%;
+        background: #181818;
+        color: #bbb;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 14px;
+    }
+
+    .badge-breaking {
+        background: #ff1d1d;
+        color: white;
+    }
+
+    /* ======================================================
+           RESPONSIVE
+        ====================================================== */
+
+    @@media(max-width:768px) {
+
+        .hero-card {
+            min-height: auto;
+        }
+
+        .hero-media {
+            height: 280px;
+        }
+
+        .hero-overlay {
+            padding: 20px;
+        }
+
+        .hero-title {
+            font-size: 24px;
+        }
+
+        .media-box {
+            height: 200px;
+        }
+
+        .breaking-bar {
+            padding: 10px 14px;
+        }
+
+        .top-header {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start !important;
+        }
+    }
+
+</style>
+
+<div class="container py-4">
+
+    <!-- ======================================================
+         TOP HEADER
+    ======================================================
+
+    <div class="top-header d-flex justify-content-between align-items-center">
+
+        <div>
+            <h3 class="fw-bold mb-1">
+                📰 @Localizer["Latest News"].Value
+            </h3>
+
+            <small class="text-muted">
+                @Localizer["Stay updated with latest news"].Value
+            </small>
+        </div>
+
+
+    </div> -->
+
+    <!-- ======================================================
+         BREAKING NEWS
+    ====================================================== -->
+    @if (breakingNews.Any())
+    {
+        <div class="breaking-wrapper">
+
+            <div class="breaking-bar">
+
+                <div class="breaking-text">
+
+                    🔴 @Localizer["Breaking"].Value :
+
+                    @foreach (var item in breakingNews.Take(10))
+                    {
+                        <span class="me-4">
+                            • @GetTitle(item)
+                        </span>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+    <!-- ======================================================
+         CATEGORIES
+    ====================================================== -->
+    @if (categories.Any())
+    {
+        <div class="category-strip">
+
+            @foreach (var cat in categories)
+            {
+                <a class="cat-pill"
+                   href="@Url.Action("News", "Home", new { id = cat.Id })">
+
+                    @GetCategoryName(cat)
+
+                </a>
+            }
+
+        </div>
+    }
+
+    <!-- ======================================================
+         HERO SECTION
+    ====================================================== -->
+    @if (hero != null)
+    {
+        <a asp-controller="News"
+           asp-action="Details"
+           asp-route-id="@hero.Id">
+
+            <div class="hero-card">
+
+                @if (!string.IsNullOrWhiteSpace(hero.VideoPath))
+                {
+                    <video class="hero-media"
+                           autoplay
+                           muted
+                           loop
+                           playsinline>
+
+                        <source src="@Url.Content("~/assets/video/" + hero.VideoPath)"
+                                type="video/mp4">
+
+                    </video>
+                }
+                else if (!string.IsNullOrWhiteSpace(hero.VideoUrl))
+                {
+                    var videoId = GetYoutubeId(hero.VideoUrl);
+
+                    <iframe class="hero-media"
+                            src="https://www.youtube.com/embed/@(videoId)?autoplay=1&mute=1&controls=0&loop=1&playlist=@(videoId)"
+                            allowfullscreen>
+                    </iframe>
+                }
+                else if (!string.IsNullOrWhiteSpace(hero.Image))
+                {
+                    <img class="hero-media"
+                         src="@Url.Content("~/assets/img/" + hero.Image)"
+                         alt="@GetTitle(hero)" />
+                }
+                else
+                {
+                    <div class="empty-media">
+                        @Localizer["No Media Available"].Value
+                    </div>
+                }
+
+                <div class="hero-overlay">
+
+                    <div class="hero-content">
+
+                        @if (hero.IsBreaking)
+                        {
+                            <span class="badge badge-breaking px-3 py-2">
+                                🔴 @Localizer["Breaking"].Value
+                            </span>
+                        }
+
+                        <h1 class="hero-title">
+                            @GetTitle(hero)
+                        </h1>
+
+                        <div class="hero-meta">
+
+                            <i class="bi bi-calendar-event"></i>
+
+                            @hero.Date.ToString("dd MMM yyyy")
+
+                            &nbsp; | &nbsp;
+
+                            <i class="bi bi-folder"></i>
+
+                            @GetCategoryName(hero.Category)
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </a>
+    }
+
+   
+    <!-- ======================================================
+         NEWS GRID
+    ====================================================== -->
+
+    <div class="row">
+
+        @foreach (var item in normalNews)
+        {
+            <div class="col-lg-4 col-md-6 mb-4">
+
+                <a asp-controller="News"
+                   asp-action="Details"
+                   asp-route-id="@item.Id"
+                   class="d-block h-100">
+
+                    <div class="card news-card">
+
+                        <!-- MEDIA -->
+
+                        <div class="media-box">
+
+                            @if (!string.IsNullOrWhiteSpace(item.VideoPath))
+                            {
+                                <video controls>
+
+                                    <source src="@Url.Content("~/assets/video/" + item.VideoPath)"
+                                            type="video/mp4">
+
+                                </video>
+                            }
+                            else if (!string.IsNullOrWhiteSpace(item.VideoUrl))
+                            {
+                                var videoId = GetYoutubeId(item.VideoUrl);
+
+                                <iframe src="https://www.youtube.com/embed/@videoId"
+                                        allowfullscreen>
+                                </iframe>
+                            }
+                            else if (!string.IsNullOrWhiteSpace(item.Image))
+                            {
+                                <img src="@Url.Content("~/assets/img/" + item.Image)"
+                                     alt="@GetTitle(item)" />
+                            }
+                            else
+                            {
+                                <div class="empty-media">
+
+                                    @Localizer["No Media"].Value
+
+                                </div>
+                            }
+
+                        </div>
+
+                        <!-- BODY -->
+
+                        <div class="card-body d-flex flex-column">
+
+                            <div class="mb-3">
+
+                                <span class="badge bg-dark">
+
+                                    @GetCategoryName(item.Category)
+
+                                </span>
+
+                                @if (item.IsBreaking)
+                                {
+                                    <span class="badge badge-breaking ms-1">
+
+                                        🔴 @Localizer["Breaking"].Value
+
+                                    </span>
+                                }
+
+                        </div>
+
+                        <h5 class="news-title">
+
+                            @GetTitle(item)
+
+                        </h5>
+
+                        <small class="text-muted mb-3">
+
+                            <i class="bi bi-clock"></i>
+
+                            @item.Date.ToString("dd MMM yyyy")
+
+                        </small>
+
+                        <p class="news-desc mt-auto">
+
+                            @(string.IsNullOrWhiteSpace(GetDescription(item))
+                                                        ? Localizer["No Description"].Value
+                                                        : GetDescription(item))
+
+                        </p>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+                }
+
+    </div>
+
+</div>
+
+@if (Model.TotalPages > 1)
+{
+    <nav class="mt-5">
+        <ul class="pagination justify-content-center">
+
+            <!-- First -->
+            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link"
+                   asp-action="Index"
+                   asp-route-page="1">
+                    First
+                </a>
+            </li>
+
+            <!-- Previous -->
+            <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                <a class="page-link"
+                   asp-action="Index"
+                   asp-route-page="@(Model.CurrentPage - 1)">
+                    Previous
+                </a>
+            </li>
+
+            @{
+                int startPage = Math.Max(1, Model.CurrentPage - 2);
+                int endPage = Math.Min(Model.TotalPages, Model.CurrentPage + 2);
+            }
+
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@i">
+                        @i
+                    </a>
+                </li>
+            }
+
+            <!-- Next -->
+            <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                <a class="page-link"
+                   asp-action="Index"
+                   asp-route-page="@(Model.CurrentPage + 1)">
+                    Next
+                </a>
+            </li>
+
+            <!-- Last -->
+            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                <a class="page-link"
+                   asp-action="Index"
+                   asp-route-page="@Model.TotalPages">
+                    Last
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+}

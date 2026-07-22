@@ -1,0 +1,185 @@
+﻿@model IEnumerable<NewsApp.Models.Category>
+
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+
+<style>
+    body {
+        background: #f4f6f9;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, #1f4037, #99f2c8);
+        color: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    .card-table {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+
+    .table thead {
+        background: #212529;
+        color: white;
+    }
+
+    .table tbody tr:hover {
+        background: #f1f5f9;
+    }
+
+    .btn-action {
+        border-radius: 50px;
+        padding: 4px 12px;
+        font-size: 13px;
+    }
+
+    .search-box {
+        border-radius: 50px;
+        padding: 10px 20px;
+    }
+
+    .empty-box {
+        text-align: center;
+        padding: 50px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+</style>
+
+<div class="container mt-4">
+
+    <!-- HEADER -->
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h3><i class="bi bi-folder"></i> Category Management</h3>
+            <small>Manage all news categories</small>
+        </div>
+
+        <a asp-action="Create" class="btn btn-light btn-sm px-3">
+            <i class="bi bi-plus-circle"></i> Create New
+        </a>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="mb-3">
+        <input type="text" id="searchBox" class="form-control search-box"
+               placeholder="🔍 Search categories..." />
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="card card-table">
+
+            <div class="table-responsive">
+
+                <table class="table align-middle mb-0">
+
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>English Name</th>
+                            <th>Bangla Name</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @{
+                            int count = 1;
+                        }
+
+                        @foreach (var item in Model)
+                        {
+                            <tr class="category-row">
+
+                                <!-- INDEX -->
+                                <td class="fw-bold text-muted">
+                                    @count
+                                </td>
+
+                                <!-- ENGLISH NAME -->
+                                <td class="fw-semibold category-name">
+                                    <i class="bi bi-globe text-primary"></i>
+                                    @item.NameEnglish
+                                </td>
+
+                                <!-- BANGLA NAME -->
+                                <td class="text-muted">
+                                    @item.NameBangla
+                                </td>
+
+                                <!-- ACTIONS -->
+                                <td class="text-center">
+
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-primary btn-sm btn-action">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-info btn-sm text-white btn-action">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+
+                                    <a asp-action="Delete"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-danger btn-sm btn-action">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                            count++;
+                        }
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="empty-box">
+            <h4>No Categories Found</h4>
+            <p>Create your first category to organize news</p>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create Category
+            </a>
+        </div>
+    }
+
+</div>
+
+<!-- SEARCH SCRIPT -->
+<script>
+    const searchBox = document.getElementById("searchBox");
+
+    searchBox?.addEventListener("keyup", function () {
+        const value = this.value.toLowerCase();
+
+        document.querySelectorAll(".category-row").forEach(row => {
+
+            const english = row.children[1].innerText.toLowerCase();
+            const bangla = row.children[2].innerText.toLowerCase();
+
+            row.style.display =
+                english.includes(value) || bangla.includes(value)
+                    ? ""
+                    : "none";
+        });
+    });
+</script>

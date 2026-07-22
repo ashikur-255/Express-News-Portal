@@ -1,0 +1,126 @@
+﻿@model NewsApp.Models.Category
+
+@{
+    ViewData["Title"] = "Edit Category";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+
+<style>
+    body {
+        background: #f4f6f9;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, #11998e, #38ef7d);
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    .form-card {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    .form-label {
+        font-weight: 600;
+    }
+
+    .btn-custom {
+        border-radius: 50px;
+        padding: 6px 18px;
+    }
+
+    .hint-text {
+        font-size: 13px;
+        color: #888;
+    }
+</style>
+
+<div class="container mt-4">
+
+    <!-- HEADER -->
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h3><i class="bi bi-pencil-square"></i> Edit Category</h3>
+            <small>Update category information</small>
+        </div>
+
+        <a asp-action="Index" class="btn btn-light btn-custom">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <!-- FORM -->
+    <div class="form-card">
+
+        <form asp-action="Edit">
+
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <input type="hidden" asp-for="Id" />
+
+            <!-- ENGLISH NAME -->
+            <div class="mb-3">
+                <label asp-for="NameEnglish" class="form-label">
+                    English Name
+                </label>
+
+                <input asp-for="NameEnglish"
+                       class="form-control"
+                       placeholder="Enter English category name..." />
+
+                <span asp-validation-for="NameEnglish" class="text-danger"></span>
+            </div>
+
+            <!-- BANGLA NAME -->
+            <div class="mb-3">
+                <label asp-for="NameBangla" class="form-label">
+                    Bangla Name
+                </label>
+
+                <input asp-for="NameBangla"
+                       class="form-control"
+                       placeholder="বাংলা ক্যাটাগরি নাম লিখুন..." />
+
+                <span asp-validation-for="NameBangla" class="text-danger"></span>
+
+                <div class="hint-text">
+                    You can update both language names anytime
+                </div>
+            </div>
+
+            <!-- BUTTONS -->
+            <div class="mt-4 d-flex gap-2">
+
+                <button type="submit" class="btn btn-primary btn-custom">
+                    <i class="bi bi-save"></i> Save Changes
+                </button>
+
+                <a asp-action="Index" class="btn btn-secondary btn-custom">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
