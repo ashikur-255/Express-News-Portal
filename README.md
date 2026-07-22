@@ -1,6 +1,3 @@
-# Express-News-Portal
-A modern News Portal built with ASP.NET Core MVC featuring Authentication &amp; Authorization, News &amp; Category Management, Weather Integration, Bengali-English Language Converter, Live Date &amp; Time, Image Upload, and complete CRUD operations with a responsive UI.
-
 # 📰 Express News Portal
 
 A modern, feature-rich **News Portal Web Application** built with **ASP.NET Core MVC** following the MVC architecture. The application provides secure authentication, category-based news management, weather updates, Bengali-English language conversion, date & time display, and complete CRUD functionality through an intuitive admin dashboard.
@@ -31,6 +28,8 @@ A modern, feature-rich **News Portal Web Application** built with **ASP.NET Core
 - Category Wise News
 - Search News
 - News Image Upload
+- News Video Upload
+- News URL Upload
 - Rich Content Management
 
 ---
